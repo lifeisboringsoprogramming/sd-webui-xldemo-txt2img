@@ -1,0 +1,9 @@
+#xldemo_txt2img_generate {
+    min-height: 4.5em;
+}
+
+#setting_xldemo_txt2img_huggingface_access_token textarea {
+    -webkit-text-security: disc; /* Safari, Chrome, and newer versions of Opera */
+    -moz-text-security: disc; /* Firefox */
+    -ms-text-security: disc; /* Internet Explorer */
+}
