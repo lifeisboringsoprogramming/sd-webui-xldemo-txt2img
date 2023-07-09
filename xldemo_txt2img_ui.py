@@ -17,6 +17,7 @@ def make_ui():
     if XLDEMO_HUGGINGFACE_ACCESS_TOKEN is None or XLDEMO_HUGGINGFACE_ACCESS_TOKEN.strip() == '':
         with gr.Blocks(analytics_enabled=False) as ui_component:
             gr.HTML(value="""<div style='font-size: 1.4em; margin-bottom: 0.7em'><ul>
+            <li>*** It needs to have a GPU to run ***</li>
             <li>1) Please login to your Huggingface account</li>
             <li>2) Accept the SDXL 0.9 Research License Agreement <b><a href='https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9/tree/main'>here</a></b></li>
             <li>3) Create a new token at <b><a href='https://huggingface.co/settings/tokens'>here</a></b></li>
