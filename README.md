@@ -1,4 +1,4 @@
-# Stable Diffusion XL 0.9 Demo webui extension
+# Stable Diffusion XL 0.9 txt2img webui extension
 <img src="images/webui.png">
 
 A custom extension for [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) that demo the SDXL 0.9 txt2img features
