@@ -2,8 +2,9 @@ from diffusers import DiffusionPipeline
 import torch
 import gc
 import time as time_
+import random
 
-def inference():
+def inference(seed=-1):
     access_token = ''
 
     model_key_base = "stabilityai/stable-diffusion-xl-base-0.9"
@@ -14,7 +15,8 @@ def inference():
         model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
     pipe.enable_model_cpu_offload()
 
-    seed = 1234
+    if seed == -1:
+        seed = int(random.randrange(4294967294))
 
     device = 'cuda'
     generator = torch.Generator(device=device)
@@ -28,7 +30,7 @@ def inference():
         dtype=torch.float16
     )
 
-    prompt = 'Marble statue of a serene goddess, with flowing robes, delicate features, and a tranquil expression, highly detailed, soft lighting, grace and beauty'
+    prompt = '✨aesthetic✨ aliens walk among us in Las Vegas, scratchy found film photograph'
     negative_prompt = 'low quality'
     guidance_scale = 7
     num_inference_steps = 20
@@ -40,14 +42,14 @@ def inference():
     gc.collect()
     torch.cuda.empty_cache()
 
-    images[0].save('inference.png')
+    images[0].save(f'inference-{int(time_.time())}-{seed}.png')
 
 
 if __name__ == "__main__":
     start_time = time_.time()
         
     # Run your code
-    inference()
+    inference(-1)
 
     end_time = time_.time()
     elapsed_time = end_time - start_time
