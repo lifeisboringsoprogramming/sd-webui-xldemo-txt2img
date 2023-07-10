@@ -4,6 +4,7 @@
 A custom extension for [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui) that demo the SDXL 0.9 txt2img features
 
 # Tested environment
+* GPU: RTX 3060 12G VRAM
 * OS: Ubuntu
 * Automatic1111 WebUI version: v1.4.0
 * python: 3.10.9
