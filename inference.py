@@ -14,8 +14,6 @@ def inference():
         model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
     pipe.enable_model_cpu_offload()
 
-    latents = None
-
     seed = 1234
 
     device = 'cuda'
@@ -57,5 +55,16 @@ if __name__ == "__main__":
     # Print the elapsed time
     print(f"Elapsed time: {elapsed_time:.4f} seconds")
 
-    # Ubuntu
+    # Ubuntu 20.04.4 LTS
+    # +---------------------------------------------------------------------------------------+
+    # | NVIDIA-SMI 530.30.02              Driver Version: 530.30.02    CUDA Version: 12.1     |
+    # |-----------------------------------------+----------------------+----------------------+
+    # | GPU  Name                  Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+    # | Fan  Temp  Perf            Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+    # |                                         |                      |               MIG M. |
+    # |=========================================+======================+======================|
+    # |   0  NVIDIA GeForce RTX 3060         On | 00000000:05:00.0 Off |                  N/A |
+    # |  0%   42C    P8               14W / 170W|    448MiB / 12288MiB |     41%      Default |
+    # |                                         |                      |                  N/A |
+    # +-----------------------------------------+----------------------+----------------------+    
     # Elapsed time: 32.2543 seconds
