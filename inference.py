@@ -70,6 +70,41 @@ if __name__ == "__main__":
     # |  0%   42C    P8               14W / 170W|    448MiB / 12288MiB |     41%      Default |
     # |                                         |                      |                  N/A |
     # +-----------------------------------------+----------------------+----------------------+
+    # 
+    # Python 3.10.9
+    # torch                   2.0.1+cu118
+    # transformers            4.25.1
+    # diffusers               0.18.1
+    #
+    # ~/.cache/huggingface/hub/models--stabilityai--stable-diffusion-xl-base-0.9/snapshots/025709258a55cc924dc47efd88959f18ae79830e$ tree
+    # .
+    # ├── model_index.json -> ../../blobs/4b76d56998e4e2c7bfe973ccb4d0f1c361e1287b
+    # ├── scheduler
+    # │   └── scheduler_config.json -> ../../../blobs/5bdb7b6e0eeda414c9c37ec916da0fc4ef294c7e
+    # ├── text_encoder
+    # │   ├── config.json -> ../../../blobs/15cf93d7088b7f349e6522a8692c457d8ae6fde9
+    # │   └── model.safetensors -> ../../../blobs/22928c6a6a99759e4a19648ba56e044d1df47b650f7879470501b71ec996a3ef
+    # ├── text_encoder_2
+    # │   ├── config.json -> ../../../blobs/c4ad7f842f557f4371e748443299a3c70a5dcbe1
+    # │   └── model.safetensors -> ../../../blobs/d65d20651dd313f3b699b03885da0032d8f852b8b5dbbbdf5b56ce9b10ca5e3d
+    # ├── tokenizer
+    # │   ├── merges.txt -> ../../../blobs/76e821f1b6f0a9709293c3b6b51ed90980b3166b
+    # │   ├── special_tokens_map.json -> ../../../blobs/2c2130b544c0c5a72d5d00da071ba130a9800fb2
+    # │   ├── tokenizer_config.json -> ../../../blobs/2e8612a429492973fe60635b3f44a28b065cfac0
+    # │   └── vocab.json -> ../../../blobs/469be27c5c010538f845f518c4f5e8574c78f7c8
+    # ├── tokenizer_2
+    # │   ├── merges.txt -> ../../../blobs/76e821f1b6f0a9709293c3b6b51ed90980b3166b
+    # │   ├── special_tokens_map.json -> ../../../blobs/ae0c5be6f35217e51c4c000fd325d8de0294e99c
+    # │   ├── tokenizer_config.json -> ../../../blobs/a8438e020c4497a429240d6b89e0bf9a6e2ffa92
+    # │   └── vocab.json -> ../../../blobs/469be27c5c010538f845f518c4f5e8574c78f7c8
+    # ├── unet
+    # │   ├── config.json -> ../../../blobs/e53796e5812b975c00aefbeb475cce337c88fde9
+    # │   └── diffusion_pytorch_model.safetensors -> ../../../blobs/7a516d65c0f41e82e7f3c16cad90d2362a01533beec7309e3606d59cd682797f
+    # └── vae
+    #     ├── config.json -> ../../../blobs/6e9694046afd2a944dd17a2390b98773cacf2f7c
+    #     └── diffusion_pytorch_model.safetensors -> ../../../blobs/1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341
+    # 7 directories, 18 files
+    # 
     # Elapsed time: 32.2543 seconds
 
     # Windows 10
