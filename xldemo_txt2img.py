@@ -54,13 +54,13 @@ class XLDemo:
 
             print("Loading model", self.model_key_base)
             self.pipe = DiffusionPipeline.from_pretrained(
-                self.model_key_base, torch_dtype=torch.float16, use_auth_token=access_token)
+                self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
             self.pipe.enable_model_cpu_offload()
 
             if self.load_refiner_on_startup:
                 print("Loading model", self.model_key_refiner)
                 self.pipe_refiner = DiffusionPipeline.from_pretrained(
-                    self.model_key_refiner, torch_dtype=torch.float16, use_auth_token=access_token)
+                    self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
                 self.pipe_refiner.enable_model_cpu_offload()
 
     def get_fixed_seed(self, seed):
