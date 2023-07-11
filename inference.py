@@ -36,9 +36,17 @@ def inference(seed=-1):
     guidance_scale = 7
     num_inference_steps = 20
 
+    start_time = time_.time()
+
     images = pipe(prompt=[prompt], negative_prompt=[negative_prompt],
                   guidance_scale=guidance_scale, num_inference_steps=num_inference_steps,
                   latents=latents).images
+
+    end_time = time_.time()
+    elapsed_time = end_time - start_time
+
+    # Print the elapsed time
+    print(f"Elapsed time: {elapsed_time:.4f} seconds")
 
     gc.collect()
     torch.cuda.empty_cache()
@@ -47,16 +55,9 @@ def inference(seed=-1):
 
 
 if __name__ == "__main__":
-    start_time = time_.time()
 
     # Run your code
     inference(-1)
-
-    end_time = time_.time()
-    elapsed_time = end_time - start_time
-
-    # Print the elapsed time
-    print(f"Elapsed time: {elapsed_time:.4f} seconds")
 
     # Ubuntu 20.04.4 LTS
     # +---------------------------------------------------------------------------------------+
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     #     └── diffusion_pytorch_model.safetensors -> ../../../blobs/1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341
     # 7 directories, 18 files
     # 
-    # Elapsed time: 32.2543 seconds
+    # Elapsed time: 29.2194 seconds
 
     # Windows 10
     # +---------------------------------------------------------------------------------------+
