@@ -10,11 +10,16 @@ import modules.images as sd_images
 from modules import generation_parameters_copypaste
 from modules.devices import get_optimal_device
 
+XLDEMO_MODEL_CHOICES = ["SDXL 0.9", "SDXL 0.9 (fp16)"]
+
 XLDEMO_HUGGINGFACE_ACCESS_TOKEN = opts.data.get(
     "xldemo_txt2img_huggingface_access_token", "")
 
 XLDEMO_LOAD_REFINER_ON_STARTUP = opts.data.get(
     "xldemo_txt2img_load_refiner_on_startup", True)
+
+XLDEMO_MODEL = opts.data.get(
+    "xldemo_txt2img_model", XLDEMO_MODEL_CHOICES[0])
 
 
 def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_scale, index):
@@ -26,6 +31,7 @@ def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_sc
         "Size": f"{width}x{height}",
     }
 
+    generation_params['Model'] = XLDEMO_MODEL
     generation_params['Comment'] = "https://bit.ly/3pJKuhx"
 
     generation_params_text = ", ".join(
@@ -39,12 +45,13 @@ def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_sc
 def create_infotext_for_refiner(prompt, negative_prompt, seeds, steps, width, height, index, refiner_strength):
 
     generation_params = {
-        "Steps": steps,
         "Seed": seeds[index],
         "Size": f"{width}x{height}",
+        "Refiner Steps": steps,
         "Refiner Strength": refiner_strength,
     }
 
+    generation_params['Model'] = XLDEMO_MODEL
     generation_params['Comment'] = "https://bit.ly/3pJKuhx"
 
     generation_params_text = ", ".join(
@@ -59,6 +66,9 @@ class XLDemo:
 
     def __init__(self):
 
+        self.model_name = XLDEMO_MODEL
+        print(f"Using {self.model_name}")
+
         self.model_key_base = "stabilityai/stable-diffusion-xl-base-0.9"
         self.model_key_refiner = "stabilityai/stable-diffusion-xl-refiner-0.9"
 
@@ -69,14 +79,24 @@ class XLDemo:
             access_token = XLDEMO_HUGGINGFACE_ACCESS_TOKEN
 
             print("Loading model", self.model_key_base)
-            self.pipe = DiffusionPipeline.from_pretrained(
-                self.model_key_base, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+            self.pipe = None
+            if self.model_name == 'SDXL 0.9 (fp16)':
+                self.pipe = DiffusionPipeline.from_pretrained(
+                    self.model_key_base, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+            else:
+                self.pipe = DiffusionPipeline.from_pretrained(
+                    self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
             self.pipe.enable_model_cpu_offload()
 
             if self.load_refiner_on_startup:
                 print("Loading model", self.model_key_refiner)
-                self.pipe_refiner = DiffusionPipeline.from_pretrained(
-                    self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+                self.pipe_refiner = None
+                if self.model_name == 'SDXL 0.9 (fp16)':
+                    self.pipe_refiner = DiffusionPipeline.from_pretrained(
+                        self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+                else:
+                    self.pipe_refiner = DiffusionPipeline.from_pretrained(
+                        self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
                 self.pipe_refiner.enable_model_cpu_offload()
 
     def get_fixed_seed(self, seed):
