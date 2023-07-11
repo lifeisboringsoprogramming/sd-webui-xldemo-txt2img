@@ -4,6 +4,7 @@ import gc
 import time as time_
 import random
 
+
 def inference(seed=-1):
     access_token = ''
 
@@ -36,8 +37,8 @@ def inference(seed=-1):
     num_inference_steps = 20
 
     images = pipe(prompt=[prompt], negative_prompt=[negative_prompt],
-                guidance_scale=guidance_scale, num_inference_steps=num_inference_steps,
-                latents=latents).images
+                  guidance_scale=guidance_scale, num_inference_steps=num_inference_steps,
+                  latents=latents).images
 
     gc.collect()
     torch.cuda.empty_cache()
@@ -47,7 +48,7 @@ def inference(seed=-1):
 
 if __name__ == "__main__":
     start_time = time_.time()
-        
+
     # Run your code
     inference(-1)
 
@@ -68,5 +69,62 @@ if __name__ == "__main__":
     # |   0  NVIDIA GeForce RTX 3060         On | 00000000:05:00.0 Off |                  N/A |
     # |  0%   42C    P8               14W / 170W|    448MiB / 12288MiB |     41%      Default |
     # |                                         |                      |                  N/A |
-    # +-----------------------------------------+----------------------+----------------------+    
+    # +-----------------------------------------+----------------------+----------------------+
     # Elapsed time: 32.2543 seconds
+
+    # Windows 10
+    # +---------------------------------------------------------------------------------------+
+    # | NVIDIA-SMI 536.40                 Driver Version: 536.40       CUDA Version: 12.2     |
+    # |-----------------------------------------+----------------------+----------------------+
+    # | GPU  Name                     TCC/WDDM  | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+    # | Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+    # |                                         |                      |               MIG M. |
+    # |=========================================+======================+======================|
+    # |   0  NVIDIA GeForce RTX 3060      WDDM  | 00000000:05:00.0  On |                  N/A |
+    # |  0%   46C    P8              14W / 170W |    557MiB / 12288MiB |      8%      Default |
+    # |                                         |                      |                  N/A |
+    # +-----------------------------------------+----------------------+----------------------+
+    #
+    # Python 3.10.6
+    # torch                   2.0.1+cu118
+    # transformers            4.25.1
+    # diffusers               0.18.1
+    #
+    # C:\Users\libsp\.cache\huggingface\hub\models--stabilityai--stable-diffusion-xl-base-0.9\snapshots\025709258a55cc924dc47efd88959f18ae79830e>tree /F
+    # Folder PATH listing
+    # Volume serial number is 82DA-B681
+    # C:.
+    # │   model_index.json
+    # │
+    # ├───scheduler
+    # │       scheduler_config.json
+    # │
+    # ├───text_encoder
+    # │       config.json
+    # │       pytorch_model.bin
+    # │
+    # ├───text_encoder_2
+    # │       config.json
+    # │       pytorch_model.bin
+    # │
+    # ├───tokenizer
+    # │       merges.txt
+    # │       special_tokens_map.json
+    # │       tokenizer_config.json
+    # │       vocab.json
+    # │
+    # ├───tokenizer_2
+    # │       merges.txt
+    # │       special_tokens_map.json
+    # │       tokenizer_config.json
+    # │       vocab.json
+    # │
+    # ├───unet
+    # │       config.json
+    # │       diffusion_pytorch_model.bin
+    # │
+    # └───vae
+    #         config.json
+    #         diffusion_pytorch_model.bin
+    #
+    # Elapsed time: 69.5944 seconds
