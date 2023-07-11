@@ -17,7 +17,7 @@ XLDEMO_LOAD_REFINER_ON_STARTUP = opts.data.get(
     "xldemo_txt2img_load_refiner_on_startup", True)
 
 
-def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_scale, index, refiner=-1):
+def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_scale, index):
 
     generation_params = {
         "Steps": steps,
@@ -26,8 +26,24 @@ def create_infotext(prompt, negative_prompt, seeds, steps, width, height, cfg_sc
         "Size": f"{width}x{height}",
     }
 
-    if refiner != -1:
-        generation_params['Refiner Strength'] = refiner
+    generation_params['Comment'] = "https://bit.ly/3pJKuhx"
+
+    generation_params_text = ", ".join(
+        [k if k == v else f'{k}: {generation_parameters_copypaste.quote(v)}' for k, v in generation_params.items() if v is not None])
+
+    negative_prompt_text = f"\nNegative prompt: {negative_prompt[index]}" if negative_prompt else ""
+
+    return f"{prompt[index]}{negative_prompt_text}\n{generation_params_text}".strip()
+
+
+def create_infotext_for_refiner(prompt, negative_prompt, seeds, steps, width, height, index, refiner_strength):
+
+    generation_params = {
+        "Steps": steps,
+        "Seed": seeds[index],
+        "Size": f"{width}x{height}",
+        "Refiner Strength": refiner_strength,
+    }
 
     generation_params['Comment'] = "https://bit.ly/3pJKuhx"
 
@@ -94,7 +110,7 @@ class XLDemo:
 
         return latents, seeds
 
-    def infer(self, prompt, negative, width, height, cfg_scale, seed, samples, steps, enable_refiner, refiner_strength):
+    def infer(self, prompt, negative, width, height, cfg_scale, seed, samples, steps):
         prompt, negative = [prompt] * samples, [negative] * samples
 
         images = []
@@ -115,14 +131,31 @@ class XLDemo:
 
             for i, image in enumerate(images):
                 info = create_infotext(
-                    prompt, negative, seeds, steps, width, height, cfg_scale, i, refiner=-1)
+                    prompt, negative, seeds, steps, width, height, cfg_scale, i)
                 info_texts.append(info)
                 sd_images.save_image(image, opts.outdir_txt2img_samples, '', seeds[i],
                                      prompt, opts.samples_format, info=info)
                 images_b64_list.append(image)
                 gen_info_seeds.append(seeds[i])
 
+        return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
+
+    def refine(self, prompt, negative, seed, steps, enable_refiner, image_to_refine, refiner_strength):
+        prompt, negative = [prompt] * 1, [negative] * 1
+
+        images = []
+        seeds = []
+        gen_info_seeds = []
+        images_b64_list = []
+        info_texts = []
+
         if self.load_refiner_on_startup and self.pipe_refiner and enable_refiner:
+            _, seeds = self.generate_latents(1, 1, 1, 1, seed)
+
+            # Get the width and height of the image
+            width, height = image_to_refine.size
+
+            images = [image_to_refine]
             images = self.pipe_refiner(prompt=prompt, negative_prompt=negative,
                                        image=images, num_inference_steps=steps, strength=refiner_strength).images
 
@@ -130,24 +163,36 @@ class XLDemo:
             torch.cuda.empty_cache()
 
             for i, image in enumerate(images):
-                info = create_infotext(
-                    prompt, negative, seeds, steps, width, height, cfg_scale, i, refiner=refiner_strength)
+                info = create_infotext_for_refiner(
+                    prompt, negative, seeds, steps, width, height, i, refiner_strength)
                 info_texts.append(info)
                 sd_images.save_image(image, opts.outdir_txt2img_samples, '',
                                      seeds[i], prompt, opts.samples_format, info=info, suffix="-refiner")
                 images_b64_list.append(image)
                 gen_info_seeds.append(seeds[i])
 
-        return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
+            return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
 
 
 xldemo_txt2img = XLDemo()
 
 
-def do_xldemo_txt2img_infer(prompt, negative, width, height, scale, seed, samples, steps, enable_refiner, refiner_strength):
+def do_xldemo_txt2img_infer(prompt, negative, width, height, scale, seed, samples, steps):
 
     try:
-        return xldemo_txt2img.infer(prompt, negative, width, height, scale, seed, samples, steps, enable_refiner, refiner_strength)
+        return xldemo_txt2img.infer(prompt, negative, width, height, scale, seed, samples, steps)
+    except Exception as ex:
+        # Raise an Error with a custom error message
+        raise gr.Error(f"Error: {str(ex)}")
+
+
+def do_xldemo_txt2img_refine(prompt, negative, seed, steps, enable_refiner, image_to_refine, refiner_strength):
+
+    if image_to_refine is None:
+        raise gr.Error(f"Error: Please set the image for refiner")
+
+    try:
+        return xldemo_txt2img.refine(prompt, negative, seed, steps, enable_refiner, image_to_refine, refiner_strength)
     except Exception as ex:
         # Raise an Error with a custom error message
         raise gr.Error(f"Error: {str(ex)}")

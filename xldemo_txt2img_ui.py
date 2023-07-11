@@ -4,7 +4,7 @@ from modules.shared import opts
 from modules.ui_components import ToolButton
 
 from xldemo_txt2img import XLDEMO_HUGGINGFACE_ACCESS_TOKEN, XLDEMO_LOAD_REFINER_ON_STARTUP
-from xldemo_txt2img import do_xldemo_txt2img_infer
+from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine
 from xldemo_txt2img_ui_common import create_seed_inputs, create_output_panel, connect_reuse_seed, gr_show
 
 
@@ -51,6 +51,10 @@ def make_ui():
                     with gr.Row(elem_id=f"{id_part}_generate_box", elem_classes="generate-box"):
                         xldemo_txt2img_submit = gr.Button(
                             'Generate', elem_id=f"{id_part}_generate", variant='primary')
+                        
+                    with gr.Row(elem_id=f"{id_part}_refine_box", elem_classes="refine-box"):
+                        xldemo_txt2img_refine = gr.Button(                            
+                            'Refine', interactive=False, elem_id=f"{id_part}_refine", variant='primary')
 
             with gr.Row():
                 with gr.Column():
@@ -82,9 +86,16 @@ def make_ui():
                             label='Refiner', value=False, elem_id=f"{id_part}_enable_refiner")
 
                     with gr.Row(visible=False, elem_id="xldemo_txt2img_refiner_group", variant="compact") as xldemo_txt2img_refiner_group:
-                        xldemo_txt2img_refiner_strength = gr.Slider(
-                            interactive=XLDEMO_LOAD_REFINER_ON_STARTUP,
-                            label="Refiner Strength", minimum=0, maximum=1.0, value=0.3, step=0.1, elem_id=f"{id_part}_refiner_strength")
+                        with gr.Column():
+                            xldemo_txt2img_image_to_refine = gr.Image(label="Image", type='pil')
+
+                        with gr.Column():
+                            xldemo_txt2img_refiner_steps = gr.Slider(minimum=1, maximum=150, step=1,
+                                                            elem_id=f"{id_part}_refiner_steps", label="Refiner steps", value=20)
+
+                            xldemo_txt2img_refiner_strength = gr.Slider(
+                                interactive=XLDEMO_LOAD_REFINER_ON_STARTUP,
+                                label="Refiner Strength", minimum=0, maximum=1.0, value=0.3, step=0.1, elem_id=f"{id_part}_refiner_strength")
 
                 with gr.Column():
                     xldemo_txt2img_gallery, xldemo_txt2img_generation_info, xldemo_txt2img_html_info, xldemo_txt2img_html_log = create_output_panel(
@@ -102,7 +113,13 @@ def make_ui():
                     show_progress = False,
                 )
 
-            # do_xldemo_txt2img_infer(prompt, negative, scale, samples=1, steps=20, refiner_strength=0.3)
+                xldemo_txt2img_enable_refiner.change(
+                    fn=lambda x: gr.update(interactive=x),
+                    inputs=[xldemo_txt2img_enable_refiner],
+                    outputs=[xldemo_txt2img_refine],
+                    show_progress = False,
+                )
+
             xldemo_txt2img_submit.click(fn=do_xldemo_txt2img_infer, inputs=[
                 xldemo_txt2img_prompt,
                 xldemo_txt2img_negative_prompt,
@@ -111,14 +128,29 @@ def make_ui():
                 xldemo_txt2img_cfg_scale,
                 xldemo_txt2img_seed,
                 xldemo_txt2img_batch_size,
-                xldemo_txt2img_steps,
-                xldemo_txt2img_enable_refiner,
-                xldemo_txt2img_refiner_strength
+                xldemo_txt2img_steps
             ], outputs=[
                 xldemo_txt2img_gallery,
                 xldemo_txt2img_generation_info,
                 xldemo_txt2img_html_info,
                 xldemo_txt2img_html_log,
             ], api_name="do_xldemo_txt2img_infer")
+
+            
+            xldemo_txt2img_refine.click(fn=do_xldemo_txt2img_refine, inputs=[
+                xldemo_txt2img_prompt,
+                xldemo_txt2img_negative_prompt,
+                xldemo_txt2img_seed,
+                xldemo_txt2img_refiner_steps,
+                xldemo_txt2img_enable_refiner,
+                xldemo_txt2img_image_to_refine,
+                xldemo_txt2img_refiner_strength
+            ], outputs=[
+                xldemo_txt2img_gallery,
+                xldemo_txt2img_generation_info,
+                xldemo_txt2img_html_info,
+                xldemo_txt2img_html_log,
+            ], api_name="do_xldemo_txt2img_refine")
+
 
             return ui_component
