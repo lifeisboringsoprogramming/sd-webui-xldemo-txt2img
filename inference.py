@@ -1,4 +1,4 @@
-from diffusers import DiffusionPipeline
+from xldemo_pipeline import XLDemoPipeline
 import torch
 import gc
 import time as time_
@@ -12,7 +12,7 @@ def inference(seed=-1):
     model_key_refiner = "stabilityai/stable-diffusion-xl-refiner-0.9"
 
     print("Loading model", model_key_base)
-    pipe = DiffusionPipeline.from_pretrained(
+    pipe = XLDemoPipeline.from_pretrained(
         model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
     pipe.enable_model_cpu_offload()
 
