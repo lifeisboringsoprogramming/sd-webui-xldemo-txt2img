@@ -79,29 +79,35 @@ class XLDemo:
         # Use refiner (eabled by default)
         self.load_refiner_on_startup = XLDEMO_LOAD_REFINER_ON_STARTUP
 
-        if XLDEMO_HUGGINGFACE_ACCESS_TOKEN is not None and XLDEMO_HUGGINGFACE_ACCESS_TOKEN.strip() != '':
-            access_token = XLDEMO_HUGGINGFACE_ACCESS_TOKEN
+        try:
+            if XLDEMO_HUGGINGFACE_ACCESS_TOKEN is not None and XLDEMO_HUGGINGFACE_ACCESS_TOKEN.strip() != '':
+                access_token = XLDEMO_HUGGINGFACE_ACCESS_TOKEN
 
-            print("Loading model", self.model_key_base)
-            self.pipe = None
-            if self.model_name == 'SDXL 0.9 (fp16)' or self.model_name == 'SDXL 1.0 (fp16)':
-                self.pipe = DiffusionPipeline.from_pretrained(
-                    self.model_key_base, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
-            else:
-                self.pipe = DiffusionPipeline.from_pretrained(
-                    self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
-            self.pipe.enable_model_cpu_offload()
-
-            if self.load_refiner_on_startup:
-                print("Loading model", self.model_key_refiner)
-                self.pipe_refiner = None
+                print("Loading model", self.model_key_base)
+                self.pipe = None
                 if self.model_name == 'SDXL 0.9 (fp16)' or self.model_name == 'SDXL 1.0 (fp16)':
-                    self.pipe_refiner = DiffusionPipeline.from_pretrained(
-                        self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+                    self.pipe = DiffusionPipeline.from_pretrained(
+                        self.model_key_base, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
                 else:
-                    self.pipe_refiner = DiffusionPipeline.from_pretrained(
-                        self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
-                self.pipe_refiner.enable_model_cpu_offload()
+                    self.pipe = DiffusionPipeline.from_pretrained(
+                        self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
+                self.pipe.enable_model_cpu_offload()
+
+                if self.load_refiner_on_startup:
+                    print("Loading model", self.model_key_refiner)
+                    self.pipe_refiner = None
+                    if self.model_name == 'SDXL 0.9 (fp16)' or self.model_name == 'SDXL 1.0 (fp16)':
+                        self.pipe_refiner = DiffusionPipeline.from_pretrained(
+                            self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
+                    else:
+                        self.pipe_refiner = DiffusionPipeline.from_pretrained(
+                            self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
+                    self.pipe_refiner.enable_model_cpu_offload()
+        
+        except Exception as ex:
+            print(str(ex))
+            print(f'Problem loading {self.model_name} weight')
+
 
     def get_fixed_seed(self, seed):
         if seed is None or seed == '' or seed == -1:
