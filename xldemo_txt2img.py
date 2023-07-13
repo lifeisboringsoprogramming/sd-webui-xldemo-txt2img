@@ -93,6 +93,15 @@ class XLDemo:
                         self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
                 self.pipe.enable_model_cpu_offload()
 
+        except Exception as ex:
+            self.pipe = None
+            print(str(ex))
+            print(f'Problem loading {self.model_key_base} weight')
+
+        try:
+            if XLDEMO_HUGGINGFACE_ACCESS_TOKEN is not None and XLDEMO_HUGGINGFACE_ACCESS_TOKEN.strip() != '':
+                access_token = XLDEMO_HUGGINGFACE_ACCESS_TOKEN
+
                 if self.load_refiner_on_startup:
                     print("Loading model", self.model_key_refiner)
                     self.pipe_refiner = None
@@ -105,9 +114,9 @@ class XLDemo:
                     self.pipe_refiner.enable_model_cpu_offload()
         
         except Exception as ex:
+            self.pipe_refiner = None
             print(str(ex))
-            print(f'Problem loading {self.model_name} weight')
-
+            print(f'Problem loading {self.model_key_refiner} weight')
 
     def get_fixed_seed(self, seed):
         if seed is None or seed == '' or seed == -1:
@@ -168,7 +177,7 @@ class XLDemo:
                 images_b64_list.append(image)
                 gen_info_seeds.append(seeds[i])
 
-        return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
+            return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
 
     def refine(self, prompt, negative, seed, steps, enable_refiner, image_to_refine, refiner_strength):
         prompt, negative = [prompt] * 1, [negative] * 1
@@ -206,6 +215,11 @@ class XLDemo:
 
 xldemo_txt2img = XLDemo()
 
+def can_infer():
+    return xldemo_txt2img.pipe is not None
+
+def can_refine():
+    return xldemo_txt2img.pipe_refiner is not None
 
 def do_xldemo_txt2img_infer(prompt, negative, width, height, scale, seed, samples, steps):
 

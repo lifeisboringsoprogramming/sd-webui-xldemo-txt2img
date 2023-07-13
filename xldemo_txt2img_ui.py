@@ -4,7 +4,7 @@ from modules.shared import opts
 from modules.ui_components import ToolButton
 
 from xldemo_txt2img import XLDEMO_HUGGINGFACE_ACCESS_TOKEN, XLDEMO_LOAD_REFINER_ON_STARTUP
-from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine
+from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine, can_infer, can_refine
 from xldemo_txt2img_ui_common import create_seed_inputs, create_output_panel, connect_reuse_seed, gr_show
 
 
@@ -52,7 +52,7 @@ def make_ui():
                 with gr.Column(scale=1, elem_id=f"{id_part}_actions_column"):
                     with gr.Row(elem_id=f"{id_part}_generate_box", elem_classes="generate-box"):
                         xldemo_txt2img_submit = gr.Button(
-                            'Generate', elem_id=f"{id_part}_generate", variant='primary')
+                            'Generate', elem_id=f"{id_part}_generate", variant='primary', interactive=can_infer())
                         
                     with gr.Row(elem_id=f"{id_part}_refine_box", elem_classes="refine-box"):
                         xldemo_txt2img_refine = gr.Button(                            
@@ -116,7 +116,7 @@ def make_ui():
                 )
 
                 xldemo_txt2img_enable_refiner.change(
-                    fn=lambda x: gr.update(interactive=x),
+                    fn=lambda x: gr.update(interactive=x and can_refine()),
                     inputs=[xldemo_txt2img_enable_refiner],
                     outputs=[xldemo_txt2img_refine],
                     show_progress = False,
