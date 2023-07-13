@@ -28,7 +28,8 @@ def inference(seed=-1):
         (1, pipe.unet.in_channels, 1024 // 8, 1024 // 8),
         generator=generator,
         device=device,
-        dtype=torch.float16
+        dtype=torch.float16,
+        layout=torch.strided
     )
 
     prompt = '✨aesthetic✨ aliens walk among us in Las Vegas, scratchy found film photograph'
@@ -57,7 +58,7 @@ def inference(seed=-1):
 if __name__ == "__main__":
 
     # Run your code
-    inference(-1)
+    inference(1759274600)
 
     # Ubuntu 20.04.4 LTS
     # +---------------------------------------------------------------------------------------+
