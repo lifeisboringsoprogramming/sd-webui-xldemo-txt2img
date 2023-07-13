@@ -20,11 +20,12 @@ def make_ui():
             <li>*** It needs to have a GPU to run ***</li>
             <li>1) Please login to your Huggingface account</li>
             <li>2) Accept the SDXL 0.9 Research License Agreement <b><a href='https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9/tree/main'>here</a></b></li>
-            <li>3) Create a new token at <b><a href='https://huggingface.co/settings/tokens'>here</a></b></li>
-            <li>4) Set the Huggingface access token from the XL Demo menu in the Settings tab.</li>
-            <li>5) Set the model to be SDXL 0.9 (fp16) if you did not downloaded any weights before.</li>
-            <li>6) Apply settings</li>
-            <li>7) Restart the Web UI (not Reload UI)</li>
+            <li>3) Accept the SDXL 1.0 Research License Agreement <b><a href='https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/tree/main'>here</a></b></li>
+            <li>4) Create a new token at <b><a href='https://huggingface.co/settings/tokens'>here</a></b></li>
+            <li>5) Set the Huggingface access token from the XL Demo menu in the Settings tab.</li>
+            <li>6) Set the model to be SDXL 0.9 (fp16) or SDXL 1.0 (fp16) if you did not downloaded any weights before.</li>
+            <li>7) Apply settings</li>
+            <li>8) Restart the Web UI (not Reload UI)</li>
             </ul></div>""")
 
             return ui_component

@@ -10,7 +10,7 @@ import modules.images as sd_images
 from modules import generation_parameters_copypaste
 from modules.devices import get_optimal_device
 
-XLDEMO_MODEL_CHOICES = ["SDXL 0.9", "SDXL 0.9 (fp16)"]
+XLDEMO_MODEL_CHOICES = ["SDXL 0.9", "SDXL 0.9 (fp16)", "SDXL 1.0", "SDXL 1.0 (fp16)"]
 
 XLDEMO_HUGGINGFACE_ACCESS_TOKEN = opts.data.get(
     "xldemo_txt2img_huggingface_access_token", "")
@@ -72,6 +72,10 @@ class XLDemo:
         self.model_key_base = "stabilityai/stable-diffusion-xl-base-0.9"
         self.model_key_refiner = "stabilityai/stable-diffusion-xl-refiner-0.9"
 
+        if self.model_name == "SDXL 1.0" or self.model_name == "SDXL 1.0 (fp16)":
+            self.model_key_base = "stabilityai/stable-diffusion-xl-base-1.0"
+            self.model_key_refiner = "stabilityai/stable-diffusion-xl-refiner-1.0"        
+
         # Use refiner (eabled by default)
         self.load_refiner_on_startup = XLDEMO_LOAD_REFINER_ON_STARTUP
 
@@ -80,7 +84,7 @@ class XLDemo:
 
             print("Loading model", self.model_key_base)
             self.pipe = None
-            if self.model_name == 'SDXL 0.9 (fp16)':
+            if self.model_name == 'SDXL 0.9 (fp16)' or self.model_name == 'SDXL 1.0 (fp16)':
                 self.pipe = DiffusionPipeline.from_pretrained(
                     self.model_key_base, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
             else:
@@ -91,7 +95,7 @@ class XLDemo:
             if self.load_refiner_on_startup:
                 print("Loading model", self.model_key_refiner)
                 self.pipe_refiner = None
-                if self.model_name == 'SDXL 0.9 (fp16)':
+                if self.model_name == 'SDXL 0.9 (fp16)' or self.model_name == 'SDXL 1.0 (fp16)':
                     self.pipe_refiner = DiffusionPipeline.from_pretrained(
                         self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, variant='fp16', use_auth_token=access_token)
                 else:
@@ -106,7 +110,7 @@ class XLDemo:
         return seed
 
     def generate_latents(self, samples, width, height, in_channels, seed_base):
-        device = get_optimal_device()
+        device = 'cpu'
         generator = torch.Generator(device=device)
 
         latents = None
