@@ -4,7 +4,7 @@ from modules.shared import opts
 from modules.ui_components import ToolButton
 
 from xldemo_txt2img import XLDEMO_HUGGINGFACE_ACCESS_TOKEN, XLDEMO_LOAD_REFINER_ON_STARTUP
-from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine
+from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine, can_infer, can_refine
 from xldemo_txt2img_ui_common import create_seed_inputs, create_output_panel, connect_reuse_seed, gr_show
 
 
@@ -20,11 +20,12 @@ def make_ui():
             <li>*** It needs to have a GPU to run ***</li>
             <li>1) Please login to your Huggingface account</li>
             <li>2) Accept the SDXL 0.9 Research License Agreement <b><a href='https://huggingface.co/stabilityai/stable-diffusion-xl-base-0.9/tree/main'>here</a></b></li>
-            <li>3) Create a new token at <b><a href='https://huggingface.co/settings/tokens'>here</a></b></li>
-            <li>4) Set the Huggingface access token from the XL Demo menu in the Settings tab.</li>
-            <li>5) Set the model to be SDXL 0.9 (fp16) if you did not downloaded any weights before.</li>
-            <li>6) Apply settings</li>
-            <li>7) Restart the Web UI (not Reload UI)</li>
+            <li>3) Accept the SDXL 1.0 Research License Agreement <b><a href='https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/tree/main'>here</a></b></li>
+            <li>4) Create a new token at <b><a href='https://huggingface.co/settings/tokens'>here</a></b></li>
+            <li>5) Set the Huggingface access token from the XL Demo menu in the Settings tab.</li>
+            <li>6) Set the model to be SDXL 0.9 (fp16) or SDXL 1.0 (fp16) if you did not downloaded any weights before.</li>
+            <li>7) Apply settings</li>
+            <li>8) Restart the Web UI (not Reload UI)</li>
             </ul></div>""")
 
             return ui_component
@@ -51,7 +52,7 @@ def make_ui():
                 with gr.Column(scale=1, elem_id=f"{id_part}_actions_column"):
                     with gr.Row(elem_id=f"{id_part}_generate_box", elem_classes="generate-box"):
                         xldemo_txt2img_submit = gr.Button(
-                            'Generate', elem_id=f"{id_part}_generate", variant='primary')
+                            'Generate', elem_id=f"{id_part}_generate", variant='primary', interactive=can_infer())
                         
                     with gr.Row(elem_id=f"{id_part}_refine_box", elem_classes="refine-box"):
                         xldemo_txt2img_refine = gr.Button(                            
@@ -115,7 +116,7 @@ def make_ui():
                 )
 
                 xldemo_txt2img_enable_refiner.change(
-                    fn=lambda x: gr.update(interactive=x),
+                    fn=lambda x: gr.update(interactive=x and can_refine()),
                     inputs=[xldemo_txt2img_enable_refiner],
                     outputs=[xldemo_txt2img_refine],
                     show_progress = False,
