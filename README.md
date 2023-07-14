@@ -5,7 +5,8 @@ A custom extension for [AUTOMATIC1111/stable-diffusion-webui](https://github.com
 
 # Tested environment
 * GPU: RTX 3060 12G VRAM
-* OS: Ubuntu
+* OS: Ubuntu 20.04.4 LTS, Windows 10
+* RAM: 64G
 * Automatic1111 WebUI version: v1.4.0
 * python: 3.10.9
 * torch: 2.0.1+cu118
@@ -16,6 +17,7 @@ A custom extension for [AUTOMATIC1111/stable-diffusion-webui](https://github.com
 # Overview
 * This project allows users to do txt2img using the SDXL 0.9 base checkpoint
 * Refine image using SDXL 0.9 refiner checkpoint
+* Setting samplers
 * Setting sampling steps
 * Setting image width and height
 * Setting batch size
