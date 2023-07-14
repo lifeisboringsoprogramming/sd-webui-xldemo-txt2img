@@ -2,8 +2,10 @@ import gradio as gr
 
 from modules.shared import opts
 from modules.ui_components import ToolButton
+from modules import sd_models 
 
 from xldemo_txt2img import XLDEMO_HUGGINGFACE_ACCESS_TOKEN, XLDEMO_LOAD_REFINER_ON_STARTUP
+from xldemo_txt2img import XLDEMO_SCHEDULER_CHOICES
 from xldemo_txt2img import do_xldemo_txt2img_infer, do_xldemo_txt2img_refine, can_infer, can_refine
 from xldemo_txt2img_ui_common import create_seed_inputs, create_output_panel, connect_reuse_seed, gr_show
 
@@ -34,7 +36,7 @@ def make_ui():
         with gr.Blocks(analytics_enabled=False) as ui_component:
 
             with gr.Row(elem_id=f"{id_part}_toprow", variant="compact"):
-                with gr.Column(elem_id=f"{id_part}_prompt_container", scale=6):
+                with gr.Column(scale=14, elem_id=f"{id_part}_prompt_container"):
                     with gr.Row():
                         with gr.Column(scale=80):
                             with gr.Row():
@@ -49,7 +51,11 @@ def make_ui():
                                 xldemo_txt2img_negative_prompt = gr.Textbox(label="Negative prompt", elem_id=f"{id_part}_neg_prompt", show_label=False,
                                                                             lines=3, placeholder="Negative prompt (press Ctrl+Enter or Alt+Enter to generate)", elem_classes=["prompt"])
 
-                with gr.Column(scale=1, elem_id=f"{id_part}_actions_column"):
+                with gr.Column(scale=1, elem_id=f"{id_part}_memory_column"):
+                        xldemo_txt2img_unload_sd_model = gr.Button(
+                            'Unload SD checkpoint to free VRAM', elem_id=f"{id_part}_unload_sd_model")
+
+                with gr.Column(scale=4, elem_id=f"{id_part}_actions_column"):
                     with gr.Row(elem_id=f"{id_part}_generate_box", elem_classes="generate-box"):
                         xldemo_txt2img_submit = gr.Button(
                             'Generate', elem_id=f"{id_part}_generate", variant='primary', interactive=can_infer())
@@ -60,8 +66,12 @@ def make_ui():
 
             with gr.Row():
                 with gr.Column():
-                    xldemo_txt2img_steps = gr.Slider(minimum=1, maximum=150, step=1,
-                                                     elem_id=f"{id_part}_steps", label="Sampling steps", value=20)
+
+                    with gr.Row():
+                        xldemo_txt2img_sampler = gr.Dropdown(label='Sampling method', elem_id=f"{id_part}_sampling", choices=XLDEMO_SCHEDULER_CHOICES, value=XLDEMO_SCHEDULER_CHOICES[0])
+
+                        xldemo_txt2img_steps = gr.Slider(minimum=1, maximum=150, step=1,
+                                                        elem_id=f"{id_part}_steps", label="Sampling steps", value=20)
 
                     with gr.Row():
                         with gr.Column(elem_id="xldemo_txt2img_column_size", scale=4):
@@ -122,6 +132,10 @@ def make_ui():
                     show_progress = False,
                 )
 
+            with gr.Row():
+                gr.HTML(value="<p style='font-size: 1.0em; margin-bottom: 0.7em'>Watch 📺 <b><a href=\"https://youtu.be/iF4w7gFDaYM\">video</a></b> for detailed explanation 🔍 ☕️ Please consider supporting me in Patreon <b><a href=\"https://www.patreon.com/lifeisboringsoprogramming\">here</a></b> 🍻</p>")
+
+
             xldemo_txt2img_submit.click(fn=do_xldemo_txt2img_infer, inputs=[
                 xldemo_txt2img_prompt,
                 xldemo_txt2img_negative_prompt,
@@ -130,6 +144,7 @@ def make_ui():
                 xldemo_txt2img_cfg_scale,
                 xldemo_txt2img_seed,
                 xldemo_txt2img_batch_size,
+                xldemo_txt2img_sampler,
                 xldemo_txt2img_steps
             ], outputs=[
                 xldemo_txt2img_gallery,
@@ -143,6 +158,7 @@ def make_ui():
                 xldemo_txt2img_prompt,
                 xldemo_txt2img_negative_prompt,
                 xldemo_txt2img_seed,
+                xldemo_txt2img_sampler,
                 xldemo_txt2img_refiner_steps,
                 xldemo_txt2img_enable_refiner,
                 xldemo_txt2img_image_to_refine,
@@ -154,5 +170,10 @@ def make_ui():
                 xldemo_txt2img_html_log,
             ], api_name="do_xldemo_txt2img_refine")
 
+            xldemo_txt2img_unload_sd_model.click(
+                fn=sd_models.unload_model_weights,
+                inputs=[],
+                outputs=[]
+            )
 
             return ui_component
