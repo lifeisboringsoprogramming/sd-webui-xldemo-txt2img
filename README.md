@@ -43,6 +43,26 @@ This project can be run as a stable Diffusion extension inside the Stable Diffus
 
 <img src="images/webui-install.png" />
 
+# Samplers mapping
+
+|Sampler name|Diffusers schedulers class|
+|---|---|
+|dpmsolver_multistep|diffusers.schedulers.scheduling_dpmsolver_multistep.DPMSolverMultistepScheduler|
+|deis_multistep|diffusers.schedulers.scheduling_deis_multistep.DEISMultistepScheduler|
+|unipc_multistep|diffusers.schedulers.scheduling_unipc_multistep.UniPCMultistepScheduler|
+|k_dpm_2_ancestral_discrete|diffusers.schedulers.scheduling_k_dpm_2_ancestral_discrete.KDPM2AncestralDiscreteScheduler|
+|ddim|diffusers.schedulers.scheduling_ddim.DDIMScheduler|
+|dpmsolver_singlestep|diffusers.schedulers.scheduling_dpmsolver_singlestep.DPMSolverSinglestepScheduler|
+|euler_ancestral_discrete|diffusers.schedulers.scheduling_euler_ancestral_discrete.EulerAncestralDiscreteScheduler|
+|ddpm|diffusers.schedulers.scheduling_ddpm.DDPMScheduler|
+|euler_discrete|diffusers.schedulers.scheduling_euler_discrete.EulerDiscreteScheduler|
+|k_dpm_2_discrete|diffusers.schedulers.scheduling_k_dpm_2_discrete.KDPM2DiscreteScheduler|
+|pndm|diffusers.schedulers.scheduling_pndm.PNDMScheduler|
+|dpmsolver_sde|diffusers.schedulers.scheduling_dpmsolver_sde.DPMSolverSDEScheduler|
+|lms_discrete|diffusers.schedulers.scheduling_lms_discrete.LMSDiscreteScheduler|
+|heun_discrete|diffusers.schedulers.scheduling_heun_discrete.HeunDiscreteScheduler|
+
+
 # Limitations
 * this extension does not work with other extension like control net
 * this extension does not work with LoRA, textual inversion embeddings, etc
