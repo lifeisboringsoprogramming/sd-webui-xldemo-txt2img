@@ -28,6 +28,8 @@ from modules.devices import torch_gc
 XLDEMO_MODEL_CHOICES = ["SDXL 0.9",
                         "SDXL 0.9 (fp16)", "SDXL 1.0", "SDXL 1.0 (fp16)"]
 
+XLDEMO_GENERATOR_DEVICE_CHOICES = ['cpu', 'cuda', "I don't know", "I don't care"]
+
 XLDEMO_HUGGINGFACE_ACCESS_TOKEN = opts.data.get(
     "xldemo_txt2img_huggingface_access_token", "")
 
@@ -36,6 +38,9 @@ XLDEMO_LOAD_REFINER_ON_STARTUP = opts.data.get(
 
 XLDEMO_MODEL = opts.data.get(
     "xldemo_txt2img_model", XLDEMO_MODEL_CHOICES[0])
+
+XLDEMO_GENERATOR_DEVICE = opts.data.get(
+    "xldemo_txt2img_generator_device", XLDEMO_GENERATOR_DEVICE_CHOICES[0])
 
 XLDEMO_SCHEDULER_CHOICES = [
     'euler_discrete',
@@ -186,7 +191,11 @@ class XLDemo:
             return euler_discrete.from_config(pipe.scheduler.config)
 
     def get_generator(self, seed):
-        generator = torch.Generator()
+        device = 'cpu'
+        if XLDEMO_GENERATOR_DEVICE == 'cuda':
+            device = 'cuda'
+
+        generator = torch.Generator(device=device)
         generator.manual_seed(seed)
         return generator
 
