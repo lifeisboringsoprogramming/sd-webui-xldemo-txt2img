@@ -2,7 +2,7 @@ import gradio as gr
 from modules.shared import opts, OptionInfo
 from modules import script_callbacks
 from xldemo_txt2img_ui import make_ui
-from xldemo_txt2img import XLDEMO_MODEL_CHOICES
+from xldemo_txt2img import XLDEMO_MODEL_CHOICES, XLDEMO_GENERATOR_DEVICE_CHOICES
 
 
 def on_ui_tabs():
@@ -16,9 +16,15 @@ def on_ui_settings():
         "xldemo_txt2img_huggingface_access_token", OptionInfo(
             "", "Huggingface access token (Restart WebUI to take effect)", section=section)
     )
+
     opts.add_option(
         "xldemo_txt2img_model", OptionInfo(XLDEMO_MODEL_CHOICES[0], "Model (Restart WebUI to take effect)", gr.Dropdown, lambda: {
                                            "choices": XLDEMO_MODEL_CHOICES}, section=section)
+    )
+
+    opts.add_option(
+        "xldemo_txt2img_generator_device", OptionInfo(XLDEMO_GENERATOR_DEVICE_CHOICES[0], "Generator device (Restart WebUI to take effect)", gr.Radio, lambda: {
+                                           "choices": XLDEMO_GENERATOR_DEVICE_CHOICES}, section=section)
     )
 
     opts.add_option(
