@@ -133,7 +133,7 @@ def make_ui():
                 )
 
             with gr.Row():
-                gr.HTML(value="<p style='font-size: 1.0em; margin-bottom: 0.7em'>Watch 📺 <b><a href=\"https://youtu.be/iF4w7gFDaYM\">video</a></b> for detailed explanation 🔍 ☕️ Please consider supporting me in Patreon <b><a href=\"https://www.patreon.com/lifeisboringsoprogramming\">here</a></b> 🍻</p>")
+                gr.HTML(value="<p style='font-size: 1.0em; margin-bottom: 0.7em'>Watch 📺 <b><a style=\"color: red\" href=\"https://youtu.be/iF4w7gFDaYM\">video</a></b> for detailed explanation 🔍 ☕️ Please consider supporting me in Patreon <b><a style=\"color: red\" href=\"https://www.patreon.com/lifeisboringsoprogramming\">here</a></b> 🍻</p>")
 
 
             xldemo_txt2img_submit.click(fn=do_xldemo_txt2img_infer, inputs=[
