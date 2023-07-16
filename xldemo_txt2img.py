@@ -23,7 +23,7 @@ from diffusers.schedulers.scheduling_heun_discrete import HeunDiscreteScheduler 
 from modules.shared import opts
 import modules.images as sd_images
 from modules import generation_parameters_copypaste
-from modules.devices import torch_gc
+from modules.devices import torch_gc, has_mps
 
 XLDEMO_MODEL_CHOICES = ["SDXL 0.9",
                         "SDXL 0.9 (fp16)", "SDXL 1.0", "SDXL 1.0 (fp16)"]
@@ -131,7 +131,11 @@ class XLDemo:
                 else:
                     self.pipe = DiffusionPipeline.from_pretrained(
                         self.model_key_base, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
-                self.pipe.enable_model_cpu_offload()
+
+                if has_mps():
+                    self.pipe = self.pipe.to("mps")
+                else:
+                    self.pipe.enable_model_cpu_offload()
 
         except Exception as ex:
             self.pipe = None
@@ -151,7 +155,11 @@ class XLDemo:
                     else:
                         self.pipe_refiner = DiffusionPipeline.from_pretrained(
                             self.model_key_refiner, torch_dtype=torch.float16, resume_download=True, use_auth_token=access_token)
-                    self.pipe_refiner.enable_model_cpu_offload()
+
+                    if has_mps():
+                        self.pipe_refiner = self.pipe_refiner.to("mps")
+                    else:
+                        self.pipe_refiner.enable_model_cpu_offload()
 
         except Exception as ex:
             self.pipe_refiner = None
