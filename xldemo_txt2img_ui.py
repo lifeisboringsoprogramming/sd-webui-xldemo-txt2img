@@ -85,6 +85,8 @@ def make_ui():
                                 value=switch_values_symbol, elem_id="xldemo_txt2img_res_switch_btn", label="Switch dims")
 
                         with gr.Column(elem_id="txt2img_column_batch"):
+                            xldemo_txt2img_batch_count = gr.Slider(minimum=1, step=1, label='Batch count', value=1, elem_id=f"{id_part}_batch_count")
+
                             xldemo_txt2img_batch_size = gr.Slider(
                                 minimum=1, maximum=8, step=1, label='Batch size', value=1, elem_id=f"{id_part}_batch_size")
 
@@ -143,6 +145,7 @@ def make_ui():
                 xldemo_txt2img_height,
                 xldemo_txt2img_cfg_scale,
                 xldemo_txt2img_seed,
+                xldemo_txt2img_batch_count,
                 xldemo_txt2img_batch_size,
                 xldemo_txt2img_sampler,
                 xldemo_txt2img_steps

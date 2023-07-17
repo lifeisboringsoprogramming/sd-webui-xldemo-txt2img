@@ -213,8 +213,8 @@ class XLDemo:
 
         return seed
 
-    def infer(self, prompt, negative, width, height, cfg_scale, seed, samples, sampler, steps):
-        prompt, negative = [prompt] * samples, [negative] * samples
+    def infer(self, prompt, negative, width, height, cfg_scale, seed, batch_count, batch_size, sampler, steps):
+        prompt, negative = [prompt] * batch_size, [negative] * batch_size
 
         images = []
         seeds = []
@@ -224,29 +224,31 @@ class XLDemo:
 
         if self.pipe:
             seed_base = self.get_fixed_seed(int(seed))
-            seeds = [seed_base + i for i in range(samples)]
 
-            generators = [self.get_generator(seeds[i]) for i in range(samples)]
+            for bi in range(batch_count):
+                seeds = [seed_base + bi * batch_size + i for i in range(batch_size)]
 
-            scheduler = self.get_scheduler_by_name(sampler, self.pipe, seeds)
-            self.pipe.scheduler = scheduler
-            self.pipe.scheduler.set_timesteps(steps)
+                generators = [self.get_generator(seeds[i]) for i in range(batch_size)]
 
-            images = self.pipe(prompt=prompt, width=width, height=height, negative_prompt=negative, guidance_scale=cfg_scale,
-                               num_inference_steps=steps, generator=generators).images
+                scheduler = self.get_scheduler_by_name(sampler, self.pipe, seeds)
+                self.pipe.scheduler = scheduler
+                self.pipe.scheduler.set_timesteps(steps)
 
-            gc.collect()
-            torch_gc()
-            torch.cuda.empty_cache()
+                images = self.pipe(prompt=prompt, width=width, height=height, negative_prompt=negative, guidance_scale=cfg_scale,
+                                num_inference_steps=steps, generator=generators).images
 
-            for i, image in enumerate(images):
-                info = create_infotext(
-                    prompt, negative, seeds, sampler, steps, width, height, cfg_scale, i)
-                info_texts.append(info)
-                sd_images.save_image(image, opts.outdir_txt2img_samples, '', seeds[i],
-                                     prompt, opts.samples_format, info=info)
-                images_b64_list.append(image)
-                gen_info_seeds.append(seeds[i])
+                gc.collect()
+                torch_gc()
+                torch.cuda.empty_cache()
+
+                for i, image in enumerate(images):
+                    info = create_infotext(
+                        prompt, negative, seeds, sampler, steps, width, height, cfg_scale, i)
+                    info_texts.append(info)
+                    sd_images.save_image(image, opts.outdir_txt2img_samples, '', seeds[i],
+                                        prompt, opts.samples_format, info=info)
+                    images_b64_list.append(image)
+                    gen_info_seeds.append(seeds[i])
 
             return images_b64_list, json.dumps({'all_prompts': prompt, 'index_of_first_image': 0, 'all_seeds': gen_info_seeds, "infotexts": info_texts}), info_texts[0], ''
 
@@ -307,10 +309,10 @@ def can_refine():
     return xldemo_txt2img.pipe_refiner is not None
 
 
-def do_xldemo_txt2img_infer(prompt, negative, width, height, scale, seed, samples, sampler, steps):
+def do_xldemo_txt2img_infer(prompt, negative, width, height, scale, seed, batch_count, batch_size, sampler, steps):
 
     try:
-        return xldemo_txt2img.infer(prompt, negative, width, height, scale, seed, samples, sampler, steps)
+        return xldemo_txt2img.infer(prompt, negative, width, height, scale, seed, batch_count, batch_size, sampler, steps)
     except Exception as ex:
         # Raise an Error with a custom error message
         raise gr.Error(f"Error: {str(ex)}")
