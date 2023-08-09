@@ -9,7 +9,6 @@ import subprocess as sp
 
 from modules import errors
 import modules.images
-from modules.ui_components import ToolButton
 
 
 folder_symbol = '\U0001f4c2'  # 📂
@@ -27,10 +26,10 @@ def create_seed_inputs(target_interface):
         seed = gr.Number(label='Seed', value=-1,
                          elem_id=f"{target_interface}_seed")
         seed.style(container=False)
-        random_seed = ToolButton(
-            random_symbol, elem_id=f"{target_interface}_random_seed", label='Random seed')
-        reuse_seed = ToolButton(
-            reuse_symbol, elem_id=f"{target_interface}_reuse_seed", label='Reuse seed')
+        random_seed = gr.Button(
+            random_symbol, elem_id=f"{target_interface}_random_seed", label='Random seed', elem_classes=["tool"])
+        reuse_seed = gr.Button(
+            reuse_symbol, elem_id=f"{target_interface}_reuse_seed", label='Reuse seed', elem_classes=["tool"])
 
     random_seed.click(fn=None, _js="function(){setRandomSeed('" +
                       target_interface + "_seed')}", show_progress=False, inputs=[], outputs=[])
